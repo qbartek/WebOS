@@ -88,6 +88,8 @@ export function useWindowManager(pm) {
     const newWindow = {
       x: 100,
       y: 200,
+      width: 400,
+      height: 300,
       focused: true,
       ...window,
       z: list().length,

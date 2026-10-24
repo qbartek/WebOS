@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 
-export default function Window({ wm, children, window: { title, id, x, y, z, min, focused } }) {
+export default function Window({ wm, children, window: { title, id, x, y, z, width, height, min, max, focused } }) {
   const [isDragging, setDragging] = useState(false);
 
   const dragRef = useRef(null);
@@ -12,15 +12,19 @@ export default function Window({ wm, children, window: { title, id, x, y, z, min
     if (e.button != 0) return;
     if (e.target.closest('.window-controls')) return;
 
+    const newX = max ? (Math.max(0, Math.min(window.innerWidth - width, e.clientX - (width / 2)))) : x;
+    const newY =  max ? 0 : y;
+
     w.focus();
+    w.update({ max: false, x: newX, y: newY })
     e.preventDefault();
 
     dragRef.current = {
       pointerId: e.pointerId,
       initX: e.clientX,
       initY: e.clientY,
-      initLeft: x,
-      initTop: y,
+      initLeft: newX,
+      initTop: newY,
     };
 
     headerRef.current?.setPointerCapture(e.pointerId);
@@ -52,7 +56,7 @@ export default function Window({ wm, children, window: { title, id, x, y, z, min
   }
 
   function w_max() {
-
+    w.update({ max: !max });
   }
 
   function close() {
@@ -64,11 +68,13 @@ export default function Window({ wm, children, window: { title, id, x, y, z, min
   return (
     <>
       {isVisible && <div
-        className={`window ${focused ? 'focused' : ''}`}
+        className={`window${focused ? ' focused' : ''}${max ? ' fullscreen' : ''}`}
         style={{
-          top: y + 'px',
-          left: x + 'px',
+          top: max ? 0 : y + 'px',
+          left: max ? 0 : x + 'px',
           zIndex: z,
+          width: !max && width,
+          height: !max && height,
         }}
         onMouseDown={w.focus}
       >
