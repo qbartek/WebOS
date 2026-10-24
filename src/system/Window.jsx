@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 
-export default function Window({ wm, children, window: { title, id, x, y, z, min } }) {
+export default function Window({ wm, children, window: { title, id, x, y, z, min, focused } }) {
   const [isDragging, setDragging] = useState(false);
 
   const dragRef = useRef(null);
@@ -12,6 +12,7 @@ export default function Window({ wm, children, window: { title, id, x, y, z, min
     if (e.button != 0) return;
     if (e.target.closest('.window-controls')) return;
 
+    w.focus();
     e.preventDefault();
 
     dragRef.current = {
@@ -63,12 +64,13 @@ export default function Window({ wm, children, window: { title, id, x, y, z, min
   return (
     <>
       {isVisible && <div
-        className="window"
+        className={`window ${focused ? 'focused' : ''}`}
         style={{
           top: y + 'px',
           left: x + 'px',
           zIndex: z,
         }}
+        onMouseDown={w.focus}
       >
         <div
           className='window-header'

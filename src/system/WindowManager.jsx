@@ -56,13 +56,13 @@ export function useWindowManager(pm) {
     const windows = getWindows();
     const focused = windows.find(w => w.id === windowUUID);
     if (!focused) return;
-    if (focused.z === windows.length - 1 && !focused.min) return;
+    if (focused.focused && !focused.min) return;
     log(`[${focused.parent}] focus ${focused.id}`);
 
     pm.list().forEach(p => pm._setWindows(p.pid, ws => ws.map(w => {
-      if (w.z > focused.z) return { ...w, z: w.z - 1 };
-      if (w.id === windowUUID) return { ...w, z: windows.length - 1, min: false };
-      return w;
+      if (w.z > focused.z) return { ...w, z: w.z - 1, focused: false };
+      if (w.id === windowUUID) return { ...w, z: windows.length - 1, min: false, focused: true };
+      return { ...w, focused: false };
     })));
   }
 
@@ -85,14 +85,16 @@ export function useWindowManager(pm) {
     const windowUUID = crypto.randomUUID();
     log(`[${pid}] ${process.name ?? pid} - ${windowUUID}`);
 
-    const newWindow = { 
-      ...window, 
+    const newWindow = {
       x: 100,
       y: 200,
+      focused: true,
+      ...window,
       z: list().length,
     };
     newWindow.id = windowUUID;
 
+    pm.list().forEach(p => pm._setWindows(p.pid, windows => windows.map(w => ({ ...w, focused: false }))));
     pm._setWindows(pid, windows => [...windows, newWindow]);
 
     return windowUUID;
