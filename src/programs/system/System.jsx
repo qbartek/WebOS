@@ -1,5 +1,12 @@
 import { useEffect, useRef } from "react";
 import '../../styles/system.css';
+import { log, warn } from "../../shared/Log";
+
+const BROWSER_SHORTCUTS = [
+  "Ctrl+Shift+J",
+  "Ctrl+Shift+I",
+  "F12",
+];
 
 export default function System() {
   const ShortcutRegistryRef = useRef(new Map());
@@ -23,19 +30,20 @@ export default function System() {
 
     const key = event.key;
     const normalized = [...modifiers, MODIFIER_MAP[key] || (key.length === 1 ? key.toUpperCase() : key)].join('+');
-    event.preventDefault();
+    if (!BROWSER_SHORTCUTS.includes(normalized)) 
+      event.preventDefault();
 
     const registry = ShortcutRegistryRef.current;
     const handler = registry.get(normalized);
     if (handler) {
-      console.log(normalized);
-      handler();
+      log(normalized);
+      handler(event);
     }
   }
 
   function registerGlobalShortcut(shortcut, handler) {
     const registry = ShortcutRegistryRef.current;
-    if (registry.has(shortcut)) console.log(`Warning: handler for'${shortcut}' already registered.`);
+    if (registry.has(shortcut)) warn(`Warning: handler for'${shortcut}' already registered.`);
 
     registry.set(shortcut, handler);
   }
@@ -51,6 +59,8 @@ export default function System() {
     })
 
     registerGlobalShortcut("Ctrl+D", () => console.log(pm.list().map(p => `[${p.pid}] ${p.windows.length} ${p.name || ''}`).join('\n')));
+
+    registerGlobalShortcut("F5", () => window.location.reload());
 
     document.addEventListener('keydown', handleKey, false);
     return () => {
