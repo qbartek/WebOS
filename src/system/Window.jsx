@@ -1,66 +1,83 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
-export default function Window({ wm, children, window: { title, id, z, min } }) {
+export default function Window({ wm, children, window: { title, id, x, y, z, min } }) {
   const [isDragging, setDragging] = useState(false);
-  const [initX, setInitX] = useState();
-  const [initY, setInitY] = useState();
-  const [initTop, setInitTop] = useState(0);
-  const [initLeft, setInitLeft] = useState(0);
-  const [x, setX] = useState(100);
-  const [y, setY] = useState(190);
 
-  const window = wm.get(id);
+  const dragRef = useRef(null);
+  const headerRef = useRef(null);
+
+  const w = wm.get(id);
 
   function startDragging(e) {
+    if (e.button != 0) return;
+    if (e.target.closest('.window-controls')) return;
+
     e.preventDefault();
 
-    window.focus();
+    dragRef.current = {
+      pointerId: e.pointerId,
+      initX: e.clientX,
+      initY: e.clientY,
+      initLeft: x,
+      initTop: y,
+    };
 
-    setInitX(e.clientX);
-    setInitY(e.clientY);
-    setInitLeft(x);
-    setInitTop(y);
-    setDragging(true);
+    headerRef.current?.setPointerCapture(e.pointerId);
   }
-  
+
   function stopDragging(e) {
-    e.preventDefault();
-    setDragging(false);
+    if (dragRef.current?.pointerId !== e.pointerId) return;
+
+    dragRef.current = null;
+
+    if (headerRef.current?.hasPointerCapture(e.pointerId)) {
+      headerRef.current.releasePointerCapture(e.pointerId);
+    }
   }
 
   function drag(e) {
-    e.preventDefault();
-    
-    if (!isDragging) return;
+    const drag = dragRef.current;
 
-    setX(initLeft + e.clientX - initX);
-    setY(initTop + e.clientY - initY);
+    if (!drag || drag.pointerId !== e.pointerId) return;
+
+    w.update({
+      x: drag.initLeft + e.clientX - drag.initX,
+      y: Math.min(window.innerHeight - headerRef.current.offsetHeight, Math.max(0, drag.initTop + e.clientY - drag.initY)),
+    });
   }
 
   function w_min() {
-    window.update({min: true});
+    w.update({ min: true });
   }
 
   function w_max() {
-    
+
   }
 
   function close() {
-    window.close();
+    w.close();
   }
 
   const isVisible = !min;
 
   return (
     <>
-      {isVisible && <div className="window" style={{
-        top: y + 'px',
-        left: x + 'px',
-        display: 'flex',
-        flexDirection: 'column',
-        zIndex: z,
-      }}>
-        <div className='window-header' onMouseDown={startDragging} onMouseUp={stopDragging} onMouseMove={drag}>
+      {isVisible && <div
+        className="window"
+        style={{
+          top: y + 'px',
+          left: x + 'px',
+          zIndex: z,
+        }}
+      >
+        <div
+          className='window-header'
+          ref={headerRef}
+          onPointerDown={startDragging}
+          onPointerMove={drag}
+          onPointerUp={stopDragging}
+          onPointerCancel={stopDragging}
+        >
           <span className='window-title'>{title}</span>
           <div className='window-controls'>
             <button className='window-btn' onClick={w_min}>-</button>
@@ -68,9 +85,7 @@ export default function Window({ wm, children, window: { title, id, z, min } }) 
             <button className='window-btn' onClick={close}>X</button>
           </div>
         </div>
-        <div className='window-content' style={{
-          flex: 1,
-        }}>
+        <div className='window-content'>
           {children}
         </div>
       </div>}

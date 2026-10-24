@@ -85,7 +85,12 @@ export function useWindowManager(pm) {
     const windowUUID = crypto.randomUUID();
     log(`[${pid}] ${process.name ?? pid} - ${windowUUID}`);
 
-    const newWindow = { ...window, z: list().length };
+    const newWindow = { 
+      ...window, 
+      x: 100,
+      y: 200,
+      z: list().length,
+    };
     newWindow.id = windowUUID;
 
     pm._setWindows(pid, windows => [...windows, newWindow]);
