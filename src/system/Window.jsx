@@ -90,7 +90,7 @@ export default function Window({ wm, children, window: { title, id, x, y, z, wid
           <div className='window-controls'>
             <button className='window-btn' onClick={w_min}>-</button>
             <button className='window-btn' onClick={w_max}>O</button>
-            <button className='window-btn' onClick={close}>X</button>
+            <button className='window-btn window-close' onClick={close}>X</button>
           </div>
         </div>
         <div className='window-content'>
