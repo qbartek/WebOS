@@ -53,14 +53,37 @@
     user-select: none;
 }
 
+.window-controls {
+    display: flex;
+    flex-direction: row;
+}
+
 .window-btn {
     margin: 0;
     aspect-ratio: 1.2;
     height: 100%;
+    padding: 0;
 
     border: none;
     background: none;
     color: black;
+}
+
+.window-btn .hover {
+    display: none;
+}
+
+.window-btn:hover .hover {
+    display: unset;
+}
+
+.window-btn:hover:has(.hover) *:not(.hover) {
+    display: none;
+}
+
+.window-btn img {
+    height: 100%;
+    padding: 4px;
 }
 
 .window-btn:hover {
