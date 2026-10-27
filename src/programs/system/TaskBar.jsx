@@ -17,7 +17,7 @@ export default function TaskBar() {
   const DEFAULT_ICON = "# ";
 
   function getWindowIcon(window) {
-    return <div className='taskbar-item' key={window.id} onClick={() => wm.focus(window.id)}>
+    return <div className='taskbar-item' key={window.id} id={'bar-' + window.id} onClick={() => wm.focus(window.id)}>
       {window.icon ? <img className='taskbar-icon' src={"/src/assets/" + window.icon}></img> : DEFAULT_ICON}
       {window.title}
     </div>
@@ -28,7 +28,6 @@ export default function TaskBar() {
       <div className='taskbar'>
         <div className='taskbar-head'>WebOS</div>
         <div className='taskbar-item' onClick={() => pm.start('run')}>Start</div>
-        <input type="text" name="" id="" />
         <div className='taskbar-body'>{wm.list().map(getWindowIcon)}</div>
         <div className='taskbar-time'>
           {timeString}

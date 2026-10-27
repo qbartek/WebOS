@@ -37,6 +37,16 @@
     box-shadow: none;
 }
 
+.window.animated {
+    transition: 
+        width .15s cubic-bezier(.1, .9, .1, .9), 
+        height .15s cubic-bezier(.1, .9, .1, .9), 
+        left .15s cubic-bezier(.1, .9, .1, .9), 
+        top .15s cubic-bezier(.1, .9, .1, .9),
+        transform .15s linear,
+        opacity .15s linear;
+}
+
 .window-header {
     display: flex;
     flex-direction: row;
@@ -140,10 +150,6 @@
 .taskbar-icon {
     height: 1em;
     margin: auto;
-}
-
-.taskbar-time {
-    cursor: none;
 }
 
 .taskbar-time:hover::before {

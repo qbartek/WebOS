@@ -85,16 +85,24 @@ export default function Window({ wm, children, window: { title, id, x, y, z, wid
     close: rectangleXmarkSolid,
   }
 
+  const taskbarElement = document.getElementById('bar-' + id);
+  const taskbarRect = taskbarElement?.getBoundingClientRect();
+  const minLocation = taskbarRect
+    ? { x: taskbarRect.left + (taskbarElement.offsetWidth / 2), y: taskbarRect.top + taskbarElement.offsetHeight }
+    : { x: 0, y: window.innerHeight };
+
   return (
     <>
-      {true && <div
-        className={`window${focused ? ' focused' : ''}${max ? ' fullscreen' : ''}`}
+      {<div
+        className={`window${focused ? ' focused' : ''}${max ? ' fullscreen' : ''}${(!dragRef.current) ? ' animated' : ''}`}
         style={{
           top: max ? 0 : y + 'px',
           left: max ? 0 : x + 'px',
           zIndex: z,
           width: !max && width,
           height: !max && height,
+          transform: min ? (`translate(${minLocation.x - (width / 2) - x}px, ${minLocation.y - (height / 2) - y}px) scale(0)`) : undefined,
+          opacity: min ? '0%' : undefined,
         }}
         onMouseDown={w.focus}
       >
