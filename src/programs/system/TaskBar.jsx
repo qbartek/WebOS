@@ -17,7 +17,15 @@ export default function TaskBar() {
   const DEFAULT_ICON = "# ";
 
   function getWindowIcon(window) {
-    return <div className='taskbar-item' key={window.id} id={'bar-' + window.id} onClick={() => wm.focus(window.id)}>
+    const handleClick = () => {
+      if (window.focused && !window.min) {
+        wm.get(window.id, window.parent).update({ min: true });
+        return;
+      }
+      wm.focus(window.id);
+    }
+
+    return <div className='taskbar-item' key={window.id} id={'bar-' + window.id} onClick={handleClick}>
       {window.icon ? <img className='taskbar-icon' src={"/src/assets/" + window.icon}></img> : DEFAULT_ICON}
       {window.title}
     </div>

@@ -25,7 +25,13 @@ export function showDialog(wm, type, title, content) {
 }
 
 export function useWindowManager(pm) {
-  function windowMethods(pid, id) {
+  const get = (id, pid=undefined) => {
+    if (!pid) {
+      const windows = getWindows();
+      const target = windows.find(w => w.id === id);
+      pid = target.parent;
+    }
+
     return {
       close: () => pm._setWindows(pid, ws => ws.filter(w => w.id !== id)),
       update: (patch) => pm._setWindows(pid, ws => ws.map(w => w.id === id ? { ...w, ...patch } : w)),
@@ -36,10 +42,10 @@ export function useWindowManager(pm) {
   const _forPID = (pid) => ({
     add: (window) => {
       const id = add(pid, window);
-      return windowMethods(pid, id);
+      return get(id, pid);
     },
     get: (id) => {
-      return windowMethods(pid, id);
+      return get(id, pid);
     }
   });
 
@@ -102,5 +108,5 @@ export function useWindowManager(pm) {
     return windowUUID;
   };
 
-  return { render, list, add, _forPID, focus }
+  return { render, list, add, _forPID, focus, get }
 }
