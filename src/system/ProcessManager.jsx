@@ -34,13 +34,20 @@ export function useProcessManager(programs) {
     return pid;
   };
 
-  const start = useCallback((name, args) => {
+  const start = useCallback(async (name, args) => {
     if (programs[name]) {
       return startProcess({ name, app: programs[name] });
-    } else {
-      warn(`'${name}' is not recognized as an operable program.`);
-      return `'${name}' is not recognized as an operable program.`;
+    } 
+
+    if (window.fs) {
+      const file = await fs.readFile(name);
+      if (file && file.startsWith('#!')) {
+        return await start(file.slice(2));
+      }
     }
+
+    warn(`'${name}' is not recognized as an operable program.`);
+    return `'${name}' is not recognized as an operable program.`;
   })
 
   const kill = useCallback(pid => {
@@ -74,7 +81,7 @@ export function useProcessManager(programs) {
 
         if (p.windows.length > 0 && newValue.length === 0) {
           setTimeout(() => {
-            if (get(pid).windows.length === 0) {
+            if (get(pid)?.windows.length === 0) {
               log(`[${pid}] cleanup`)
               kill(pid);
             }

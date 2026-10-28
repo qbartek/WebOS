@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useProcessManager } from './system/ProcessManager.jsx';
 import { useWindowManager } from './system/WindowManager.jsx';
 import System from './programs/system/System.jsx';
@@ -7,6 +7,7 @@ import TaskBar from './programs/system/TaskBar.jsx';
 import Run from './programs/system/Run.jsx';
 import Notepad from './programs/Notepad.jsx';
 import Welcome from './programs/Welcome.jsx';
+import { useFileSystem } from './system/FileSystem.jsx';
 
 const programs = {
   ['system']: System,
@@ -17,12 +18,13 @@ const programs = {
   ['welcome']: Welcome,
 };
 
-const AUTOSTART = ['welcome'];
-
 export default function App() {
   let started = useRef(false);
+  const [fsReady, setFsReady] = useState(false);
+
   const pm = useProcessManager(programs);
   const wm = useWindowManager(pm);
+  const fs = useFileSystem(setFsReady);
 
   // Start sequence
 
@@ -32,12 +34,12 @@ export default function App() {
 
     window.pm = pm;
     window.wm = wm;
+    window.fs = fs;
 
     let autostart = [];
     autostart.push('system');
     autostart.push('desktop');
     autostart.push('taskbar');
-    AUTOSTART.forEach(p => autostart.push(p));
 
     autostart.forEach(p => pm.start(p));
   }
@@ -48,10 +50,8 @@ export default function App() {
 
   return (
     <>
-
-      {pm.run()}
-      {wm.render()}
-
+      {fsReady && pm.run()}
+      {fsReady && wm.render()}
     </>
   )
 }
