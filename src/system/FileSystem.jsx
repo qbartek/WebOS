@@ -23,9 +23,9 @@ async function checkStorageUsageAndQuota() {
 
   const keyLength = Math.max(...Object.entries(estimate.usageDetails).map(([key]) => key.length), "Total".length);
   log(`Storage${[persisted ? ' persistent' : '']}:\n` +
-    ` ${`Total:`.padEnd(keyLength+1)} ${getByteSizeString(estimate.usage)} of` +
+    ` ${`Total:`.padEnd(keyLength + 1)} ${getByteSizeString(estimate.usage)} of` +
     ` ${(estimate.quota / 1024 / 1024).toFixed(2)} MB (${((estimate.usage / estimate.quota) * 100).toFixed(2)}%)\n` +
-    Object.entries(estimate.usageDetails).map(([key, value]) => ` ${`${key}:`.padEnd(keyLength+1)} ${getByteSizeString(value)}`));
+    Object.entries(estimate.usageDetails).map(([key, value]) => ` ${`${key}:`.padEnd(keyLength + 1)} ${getByteSizeString(value)}`));
 }
 
 async function printDir(fs, path = '/') {
@@ -37,6 +37,11 @@ async function printDir(fs, path = '/') {
 }
 
 class FileSystem {
+  constructor() {
+    this.listeners = new Set();
+    this.version = 0;
+  }
+
   async _getFSRoot(path = '/') {
     if (path.startsWith('/')) {
       const OPFSRoot = await navigator.storage.getDirectory();
@@ -63,9 +68,20 @@ class FileSystem {
     return await dirHandle.getFileHandle(name, options);
   }
 
+  subscribe = (callback) => {
+    this.listeners.add(callback);
+    return () => this.listeners.delete(callback);
+  }
+
+  _notify() {
+    this.version++;
+    this.listeners.forEach(callback => callback());
+  }
+
   async createDir(path) {
     log("Write:", path);
     await this._getDirHandle(path, { create: true });
+    this._notify();
   }
 
   async readDir(path, options) {
@@ -84,6 +100,7 @@ class FileSystem {
     const writable = await handle.createWritable();
     await writable.write(content);
     await writable.close();
+    this._notify();
   }
 
   async readFile(path) {
@@ -93,7 +110,7 @@ class FileSystem {
       const file = await handle.getFile();
       return await file.text();
     } catch (e) {
-      console.log(e)
+      log(e)
       if (e.name == 'NotFoundError') {
         return null;
       } else {
@@ -104,6 +121,7 @@ class FileSystem {
 
   async clear() {
     await (await this._getFSRoot()).root.remove({ recursive: true });
+    this._notify();
   }
 }
 
