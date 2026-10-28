@@ -18,7 +18,7 @@ export function useProcessManager(programs) {
     return counter;
   }
 
-  const startProcess = ({ name, app }) => {
+  const startProcess = ({ name, app, args }) => {
     const pid = nextPid();
     log(`[${pid}] ${name ?? ''}`);
 
@@ -26,6 +26,7 @@ export function useProcessManager(programs) {
       name,
       pid,
       app,
+      args,
       windows: []
     };
 
@@ -36,7 +37,7 @@ export function useProcessManager(programs) {
 
   const start = useCallback(async (name, args) => {
     if (programs[name]) {
-      return startProcess({ name, app: programs[name] });
+      return startProcess({ name, app: programs[name], args });
     } 
 
     if (window.fs) {
@@ -69,7 +70,7 @@ export function useProcessManager(programs) {
   const run = useCallback(() => {
     return processes.map((process) => {
       return <Process pid={process.pid} key={process.pid} name={process.name}>
-        {process.app && <process.app pid={process.pid} window={wm._forPID(process.pid)} />}
+        {process.app && <process.app pid={process.pid} window={wm._forPID(process.pid)} args={process.args} />}
       </Process>
     })
   });
