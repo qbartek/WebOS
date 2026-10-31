@@ -54,7 +54,7 @@ export default function Window({ wm, children, window: { title, id, x, y, z, wid
     if (!drag || drag.pointerId !== e.pointerId) return;
 
     w.update({
-      x: drag.initLeft + e.clientX - drag.initX,
+      x: Math.min(window.innerWidth - 10, Math.max(-headerRef.current.offsetWidth + 120, drag.initLeft + e.clientX - drag.initX)),
       y: Math.min(window.innerHeight - headerRef.current.offsetHeight, Math.max(0, drag.initTop + e.clientY - drag.initY)),
     });
   }
