@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { log, warn } from "../shared/Log";
+import { getProgramFromExtension } from "../shared/files";
 
 function Process({ children }) {
   return <>
@@ -35,20 +36,25 @@ export function useProcessManager(programs) {
     return pid;
   };
 
-  const start = useCallback(async (name, args) => {
+  const start = useCallback(async (name, args=[]) => {
     if (programs[name]) {
       return startProcess({ name, app: programs[name], args });
-    } 
+    }
 
     if (window.fs) {
-      const file = await fs.readFile(name);
-      if (file && file.startsWith('#!')) {
-        return await start(file.slice(2));
+      if (!name.endsWith('/')) {
+        const file = await fs.readFile(name);
+        if (file && file.startsWith('#!')) {
+          return await start(file.slice(2));
+        }
+        if (file) return await start(getProgramFromExtension(name), [name]);
+      } else {
+        return await start(getProgramFromExtension(name), [name]);
       }
     }
 
-    warn(`'${name}' is not recognized as an operable program.`);
-    return `'${name}' is not recognized as an operable program.`;
+    warn(`'${name}' is not recognized as an operable program or file.`);
+    return `'${name}' is not recognized as an operable program or file.`;
   })
 
   const kill = useCallback(pid => {
@@ -80,7 +86,7 @@ export function useProcessManager(programs) {
       if (p.pid === pid) {
         const newValue = update(p.windows);
 
-        if (p.windows.length > 0 && newValue.length === 0) {
+        if (p.windows.length > 0 && newValue.length === 0 && !['system', 'desktop', 'taskbar'].includes(p.name)) {
           setTimeout(() => {
             if (get(pid)?.windows.length === 0) {
               log(`[${pid}] cleanup`)
