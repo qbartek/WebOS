@@ -164,6 +164,26 @@ const fsInit = async (fs) => {
     await fs.createDir("/desktop/");
     await fs.writeFile("/desktop/Notepad.webos", "#!notepad");
     await fs.writeFile("/desktop/Welcome to WebOS!.webos", "#!welcome");
+    await fs.writeFile("/desktop/README.txt", `WebOS
+
+To create or delete files and folders, right-click anywhere in the file explorer or on the desktop to open the context menu.
+
+------------------
+
+Keyboard shortcuts
+Note: Some shortcuts may only work in fullscreen mode or not work at all depending on the browser.
+Press F11 to enter fullscreen mode.
+
+System:
+ Ctrl + R - Open the Run dialog
+ Ctrl + E - Open the file explorer
+ F5 - Restart WebOS (refresh the page)
+ Note: Restarting does not delete your files. To reset the filesystem, open the Run dialog (Ctrl+R) and type 'reset'.
+
+When using the text editor:
+ Ctrl + S - Save the current file
+ Ctrl + N - Create a new file
+      `)
     await fs.createDir("/system/");
     await fs.writeFile("/system/init-time.webos", (new Date()).toISOString());
     await fs.writeFile("/system/autostart.webos", ["welcome"].join('\n'));
