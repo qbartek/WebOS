@@ -35,12 +35,12 @@ export default function Desktop({ window: wm }) {
           if (content && content.startsWith('#!')) {
             icon = getIcon(content.slice(2));
           } else {
-            icon = getIcon('.' + extension);
+            icon = getIcon(extension);
           }
         } else if (isDirectory) {
           icon = getIcon('explorer');
         } else {
-          icon = getIcon('.' + extension);
+          icon = getIcon(extension);
         }
 
         return {

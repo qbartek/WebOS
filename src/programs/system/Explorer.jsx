@@ -111,7 +111,7 @@ function ExplorerWindow({ startPath, wm }) {
         const displayName = file.name.split('.').slice(0, -1).join('.') || file.name;
         const extension = (file.name.includes('.') ? '.' : '') + file.name.split('.').at(-1);
 
-        const icon = isDirectory ? getIcon('explorer') : getIcon('.' + extension);
+        const icon = isDirectory ? getIcon('explorer') : getIcon(extension);
 
         return <li
           onClick={() => (file.kind === 'directory' ? setPath(path + file.name + '/') : pm.start(path + file.name))}
