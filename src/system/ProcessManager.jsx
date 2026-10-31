@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import { log, warn } from "../shared/Log";
+import { log, warn } from "../shared/log.js";
 import { getProgramFromExtension } from "../shared/files";
 
 function Process({ children }) {

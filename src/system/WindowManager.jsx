@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { log } from "../shared/Log";
+import { log } from "../shared/log.js";
 import Window from "./Window";
 
 export function useWindow(wm, window, deps = []) {

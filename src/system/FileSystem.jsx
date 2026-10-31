@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { log, warn } from "../shared/Log";
+import { log, warn } from "../shared/log.js";
 
 async function requestPersistent() {
   if (navigator.storage && navigator.storage.persist) {

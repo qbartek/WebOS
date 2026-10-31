@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import '../../styles/system.css';
-import { log, warn } from "../../shared/Log";
+import { log, warn } from "../../shared/log.js";
 
 const BROWSER_SHORTCUTS = [
   "Ctrl+Shift+J",
