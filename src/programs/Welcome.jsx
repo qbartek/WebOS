@@ -4,7 +4,7 @@ export default function Welcome({ window }) {
   useWindow(window, {
     title: 'Welcome',
     width: 430,
-    height: 290,
+    height: 300,
     comp: <>
     
       <h1 style={{ textAlign: 'center' }}> Welcome! </h1>

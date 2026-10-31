@@ -1,5 +1,6 @@
 * {
     box-sizing: border-box;
+    user-select: none;
 }
 
 :root {
@@ -21,7 +22,6 @@
     position: absolute;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
 
     font-family: 'Trebuchet MS', Arial, sans-serif;
     background-color: white;
@@ -54,6 +54,8 @@
 
     background-color: #f0f0f0;
     border-bottom: 1px solid #ccc;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
 }
 
 .window-title {
@@ -102,6 +104,7 @@
 
 .window-close:hover {
     background-color: #e12;
+    border-top-right-radius: 4px;
 }
 
 .fullscreen {
@@ -109,8 +112,122 @@
     height: 100svh;
 }
 
+.window-toolbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+
+    height: 1em;
+    padding: 0 1px;
+    background-color: #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+.window-toolbar * {
+    font-size: small;
+    display: block;
+
+    background: none;
+    border: none;
+    padding: 0;
+    color: #444;
+}
+
+.window-toolbar button {
+    cursor: pointer;
+    height: 100%;
+    padding: 0 5px;
+    color: #000;
+}
+
+.window-toolbar button.disabled {
+    cursor: default;
+    color: #888;
+}
+
+.window-toolbar button:not(.disabled):hover {
+    background-color: #eee;
+}
+
 .window-content {
     flex: 1;
+    min-height: 0;
+    overflow: auto;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.window-button {
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+.window-resize {
+    position: absolute;
+}
+
+.resize-n, .resize-s {
+    cursor: ns-resize;
+    left: 6px;
+    right: 6px;
+    height: 6px;
+}
+
+.resize-n {
+    top: -3px;
+}
+
+.resize-s {
+    bottom: -3px;
+}
+
+.resize-e, .resize-w {
+    cursor: ew-resize;
+    top: 6px;
+    bottom: 6px;
+    width: 6px;
+}
+
+.resize-e {
+    right: -3px;
+}
+
+.resize-w {
+    left: -3px;
+}
+
+.resize-ne,
+.resize-nw,
+.resize-se,
+.resize-sw {
+  width: 6px;
+  height: 6px;
+}
+
+.resize-ne {
+  top: -3px;
+  right: -3px;
+  cursor: nesw-resize;
+}
+
+.resize-nw {
+  top: -3px;
+  left: -3px;
+  cursor: nwse-resize;
+}
+
+.resize-se {
+  bottom: -3px;
+  right: -3px;
+  cursor: nwse-resize;
+}
+
+.resize-sw {
+  bottom: -3px;
+  left: -3px;
+  cursor: nesw-resize;
 }
 
 .taskbar {
@@ -140,11 +257,21 @@
 .taskbar-body {
     flex: 1;
     padding: 0;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .taskbar-item {
     display: inline-block;
     flex-direction: row;
+}
+
+.taskbar-body .taskbar-item {
+    border-right: 2px solid #006b6b;
+}
+
+.taskbar-body .taskbar-item:first-child {
+    border-inline: 2px solid #006b6b;
 }
 
 .taskbar-icon {
@@ -170,12 +297,104 @@
 }
 
 .desktop-icon {
-    aspect-ratio: 1;
-    background-color: rgba(2, 2, 2, .5);
+    width: 75px;
+    background: none;
+    border: none;
     margin: 10px;
-    border: 1px dashed white;
 }
 
 .desktop-icon:hover {
-    background-color: rgba(2, 2, 2, .9);
+    background: #fff4;
+}
+
+input, textarea, [contenteditable="true"], .selectable {
+    user-select: text;
+}
+
+textarea, textarea:focus {
+    outline: none;
+    border: none;
+}
+
+.explorer-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.explorer-path {
+    display: block;
+    width: 100%;
+    padding: 5px;
+    border-inline: 1px solid transparent;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid #ccc;
+}
+
+.explorer-path:focus {
+    border-top: 1px solid #ccc;
+    border-inline: 1px solid #4778b8;
+    outline: 1px solid #4778b8;
+}
+
+.explorer-list {
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+    overflow: auto;
+    flex: 1;
+}
+
+.explorer-list li {
+    cursor: pointer;
+    border: 1px solid transparent;
+    padding: 0 5px;
+}
+
+.explorer-list li:hover {
+    background: #e8f1fc;
+    border-color: #c4d9f2;
+}
+
+.explorer-list li img {
+    margin: 3px;
+    margin-inline: 5px;
+    height: 18px;
+    width: 18px;
+    display: block;
+    float: left;
+}
+
+.context-menu {
+    position: fixed;
+    background-color: #fff;
+
+    display: flex;
+
+    outline: 1px solid #888;
+    border-radius: 8px;
+    border-top-left-radius: 0;
+    box-shadow: 0 0 12px 3px #0002;
+    overflow: hidden;
+}
+
+.context-menu button {
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.context-menu button:hover {
+    background: #0002;
+}
+
+.window-content:has(.notepad-ta) {
+    display: flex;
+    flex-direction: column;
+}
+
+.notepad-ta {
+    flex: 1;
+    width: 100%;
+    resize: none;
 }
