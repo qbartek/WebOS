@@ -9,6 +9,7 @@ import Explorer from './programs/system/Explorer.jsx';
 import Notepad from './programs/Notepad.jsx';
 import Welcome from './programs/Welcome.jsx';
 import { useFileSystem } from './system/FileSystem.jsx';
+import Reset from './programs/system/Reset.jsx';
 
 const programs = {
   ['system']: System,
@@ -18,6 +19,7 @@ const programs = {
   ['explorer']: Explorer,
   ['notepad']: Notepad,
   ['welcome']: Welcome,
+  ['reset']: Reset,
 };
 
 export default function App() {

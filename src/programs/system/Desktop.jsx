@@ -137,9 +137,6 @@ export default function Desktop({ window: wm }) {
   return loading || (
     <>
       <div className='desktop' onContextMenu={listContextMenuHandler}>
-        {files.length == 0 && <button className='desktop-icon' onClick={() => {
-          fs.clear().then(location.reload());
-        }}>Reset</button>}
         {files.map((icon) => <DesktopIcon icon={icon} key={icon.path} onContextMenu={getFileContextMenuHandler(icon.path)} />)}
       </div>
       {contextMenu && <div
