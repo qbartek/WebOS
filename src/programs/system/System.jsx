@@ -90,9 +90,8 @@ export default function System() {
   }
 
   useEffect(() => {
-    registerGlobalShortcut("Ctrl+R", () => {
-      pm.start('run');
-    })
+    registerGlobalShortcut("Ctrl+R", () => pm.start('run'));
+    registerGlobalShortcut("Ctrl+E", () => pm.start('explorer'));
 
     registerGlobalShortcut("Ctrl+D", () => console.log(pm.list().map(p => `[${p.pid}] ${p.windows.length} ${p.name || ''}`).join('\n')));
 

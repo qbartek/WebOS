@@ -5,6 +5,7 @@ import System from './programs/system/System.jsx';
 import Desktop from './programs/system/Desktop.jsx';
 import TaskBar from './programs/system/TaskBar.jsx';
 import Run from './programs/system/Run.jsx';
+import Explorer from './programs/system/Explorer.jsx';
 import Notepad from './programs/Notepad.jsx';
 import Welcome from './programs/Welcome.jsx';
 import { useFileSystem } from './system/FileSystem.jsx';
@@ -14,6 +15,7 @@ const programs = {
   ['desktop']: Desktop,
   ['taskbar']: TaskBar,
   ['run']: Run,
+  ['explorer']: Explorer,
   ['notepad']: Notepad,
   ['welcome']: Welcome,
 };
