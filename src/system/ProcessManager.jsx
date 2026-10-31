@@ -47,7 +47,7 @@ export function useProcessManager(programs) {
         if (file && file.startsWith('#!')) {
           return await start(file.slice(2));
         }
-        if (file) return await start(getProgramFromExtension(name), [name]);
+        if (file !== null) return await start(getProgramFromExtension(name), [name]);
       } else {
         return await start(getProgramFromExtension(name), [name]);
       }
