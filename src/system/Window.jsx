@@ -12,6 +12,7 @@ import rectangleXmarkSolid from '/src/assets/system/rectangle-xmark-solid-full.s
 
 export default function Window({ wm, children, window: { title, id, x, y, z, width, height, min, max, focused } }) {
   const dragRef = useRef(null);
+  const resizeRef = useRef(null);
   const headerRef = useRef(null);
 
   const w = wm.get(id);
@@ -59,6 +60,86 @@ export default function Window({ wm, children, window: { title, id, x, y, z, wid
     });
   }
 
+  function startResizing(e, edge) {
+    if (e.button != 0 || max || min) return;
+
+    e.preventDefault();
+    w.focus();
+
+    resizeRef.current = {
+      pointerId: e.pointerId,
+      initX: e.clientX,
+      initY: e.clientY,
+      initLeft: x,
+      initTop: y,
+      edge,
+      initWidth: width,
+      initHeight: height,
+    }
+
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }
+
+  function stopResizing(e) {
+    if (resizeRef.current?.pointerId !== e.pointerId) return;
+
+    resizeRef.current = null;
+
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+  }
+
+  function resize(e) {
+    if (!resizeRef.current || resizeRef.current.pointerId !== e.pointerId) return;
+
+    const dx = e.clientX - resizeRef.current.initX;
+    const dy = e.clientY - resizeRef.current.initY;
+
+    let newWidth = resizeRef.current.initWidth;
+    let newHeight = resizeRef.current.initHeight;
+    let newX = resizeRef.current.initLeft;
+    let newY = resizeRef.current.initTop;
+
+    if (resizeRef.current.edge.includes('e')) newWidth += dx;
+    if (resizeRef.current.edge.includes('w')) newWidth -= dx;
+    if (resizeRef.current.edge.includes('s')) newHeight += dy;
+    if (resizeRef.current.edge.includes('n')) newHeight -= dy;
+
+    if (newWidth < 200) newWidth = 200;
+    if (newHeight < 100) newHeight = 100;
+    
+    if (resizeRef.current.edge.includes('w')) newX = resizeRef.current.initLeft + resizeRef.current.initWidth - newWidth;
+    if (resizeRef.current.edge.includes('n')) newY = resizeRef.current.initTop + resizeRef.current.initHeight - newHeight;
+
+    if (newX > window.innerWidth - 10) {
+      newWidth += newX - window.innerWidth - 10;
+      newX = window.innerWidth - 10;
+    }
+
+    if (newY > window.innerHeight - headerRef.current.offsetHeight) {
+      newHeight += newY - window.innerHeight - headerRef.current.offsetHeight;
+      newY = window.innerHeight - headerRef.current.offsetHeight;
+    }
+
+    if (newX + newWidth < 120) {
+      newWidth = 120 - newX;
+      newX = -newWidth + 120;
+    }
+
+    if (newY < 0) {
+      newHeight -= 0 - newY;
+      newY = 0;
+    }
+
+    w.update({
+      x: newX,
+      y: newY,
+      width: newWidth,
+      height: newHeight,
+    });
+  }
+
   function w_min() {
     w.update({ min: true });
   }
@@ -94,7 +175,7 @@ export default function Window({ wm, children, window: { title, id, x, y, z, wid
   return (
     <>
       {<div
-        className={`window${focused ? ' focused' : ''}${max ? ' fullscreen' : ''}${(!dragRef.current) ? ' animated' : ''}`}
+        className={`window${focused ? ' focused' : ''}${max ? ' fullscreen' : ''}${(!dragRef.current && !resizeRef.current) ? ' animated' : ''}`}
         style={{
           top: max ? 0 : y + 'px',
           left: max ? 0 : x + 'px',
@@ -133,6 +214,18 @@ export default function Window({ wm, children, window: { title, id, x, y, z, wid
         <div className='window-content'>
           {children}
         </div>
+        {!max && !min && <>
+          {['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'].map(edge => {
+            return <div
+              key={edge}
+              className={`window-resize resize-${edge}`}
+              onPointerDown={e => startResizing(e, edge)}
+              onPointerMove={resize}
+              onPointerUp={stopResizing}
+              onPointerCancel={stopResizing}
+            />
+          })}
+        </>}
       </div>}
     </>
   )
