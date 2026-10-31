@@ -79,19 +79,28 @@ class FileSystem {
   }
 
   async createDir(path) {
-    log("Write:", path);
+    log("Create:", path);
     await this._getDirHandle(path, { create: true });
     this._notify();
   }
 
   async readDir(path, options) {
     log("Read:", path);
-    const handle = await this._getDirHandle(path, options);
-    const out = [];
-    for await (const [name, h] of handle.entries()) {
-      out.push({ name, kind: h.kind });
+    try {
+      const handle = await this._getDirHandle(path, options);
+      const out = [];
+      for await (const [name, h] of handle.entries()) {
+        out.push({ name, kind: h.kind });
+      }
+      return out;
+    } catch (e) {
+      log(e)
+      if (e.name == 'NotFoundError') {
+        return null;
+      } else {
+        throw e;
+      }
     }
-    return out;
   }
 
   async writeFile(path, content) {
@@ -117,6 +126,18 @@ class FileSystem {
         throw e;
       }
     }
+  }
+
+  async remove(path, options = {}) {
+    log("Remove:", path);
+    if (path.endsWith('/')) {
+      path = path.split('').slice(0, -1).join('');
+      options = { ...options, recursive: true };
+    }
+    const name = path.split('/').slice(-1);
+    const parent = await this._getDirHandle(path.split('/').slice(0, -1).join('/') || '/');
+    await parent.removeEntry(name, options);
+    this._notify();
   }
 
   async clear() {
