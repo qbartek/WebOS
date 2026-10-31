@@ -95,7 +95,6 @@ export default function Desktop({ window: wm }) {
                 <form action={(formData) => {
                   const folderName = formData.get('name');
                   fs.createDir(DESKTOP_PATH + folderName).catch((e) => {
-                    console.log(e);
                     showDialog(window, DIALOG.ERROR, "Error", e.name);
                     window.close();
                   }).then(() => {

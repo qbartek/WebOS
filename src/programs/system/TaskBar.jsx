@@ -14,7 +14,7 @@ export default function TaskBar() {
     return () => clearTimeout(timeout);
   }, [time]);
 
-  const DEFAULT_ICON = "# ";
+  const DEFAULT_ICON = "";
 
   function getWindowIcon(window) {
     const handleClick = () => {
@@ -34,8 +34,7 @@ export default function TaskBar() {
   return (
     <>
       <div className='taskbar'>
-        <div className='taskbar-head'>WebOS</div>
-        <div className='taskbar-item' onClick={() => pm.start('run')}>Start</div>
+        <div className='taskbar-head' onClick={() => pm.start('run')}>WebOS</div>
         <div className='taskbar-body'>{wm.list().map(getWindowIcon)}</div>
         <div className='taskbar-time'>
           {timeString}

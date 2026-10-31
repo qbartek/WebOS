@@ -61,7 +61,6 @@ function ExplorerWindow({ startPath, wm }) {
                 <form action={(formData) => {
                   const folderName = formData.get('name');
                   fs.createDir(path + folderName).catch((e) => {
-                    console.log(e);
                     showDialog(window, DIALOG.ERROR, "Error", e.name);
                     window.close();
                   }).then(() => {
